@@ -13,6 +13,9 @@ FD<-flowDiv(myworkspaces= "workspace.wsp",gate.name="bact",dilutions=rep(10,n sa
 
 FD[["Matrices"]] #contain the count table
 
+#SARA: before getting to the next setp please split the counttable into different subcounttables, for each timeseries (each repliacte seperately!) create one counttable.
+#SARA: to test the script maybe start for now only with one countable by subsetting the full countttable
+
 #### Part 2 ###
 #finding zeros
 bincurve=matrix(NA,nrow=dim(FD[["Matrices"]])[2],ncol=2)
@@ -20,7 +23,10 @@ for (i in 1:dim(FD[["Matrices"]])[2]){
   bincurve[i,]=c(i,length(which(FD[["Matrices"]][,i]==0)))
 }
 
+
 #but also the bins with 50% of the samples in order to reduce complexity and make the correlation matrix
+#SARA: you have to replace the 'n sample' by the number of samples in you subset counttable dived by 2.
+#SARA: When you have six samples, each for one sampled day (I remember we had 6 days sampled, right), the write '3'
 counter=which(bincurve[,2]>n samples)
 FDclean=FD[["Matrices"]][,-counter]
 dim(FDclean) #check the new dimensions
