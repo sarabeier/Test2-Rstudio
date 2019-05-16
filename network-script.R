@@ -1,6 +1,8 @@
 ### Part 1 ###
 setwd("directory")
 
+##another change
+
 #in the FlowJo analysis. Here, the gate "bact" was done with SCC-H vs FL1-H
 
 FD<-flowDiv(myworkspaces= "workspace.wsp",gate.name="bact",dilutions=rep(10,n samples))
