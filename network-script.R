@@ -1,4 +1,6 @@
 ### Part 1 ###
+
+#GUI: If you are using the subcounttables, you can skip Part 1 and go directly to Part 2 
 setwd("directory")
 
 ##another change
@@ -14,32 +16,57 @@ FD<-flowDiv(myworkspaces= "workspace.wsp",gate.name="bact",dilutions=rep(10,n sa
 
 FD[["Matrices"]] #contain the count table
 
-#SARA: before getting to the next setp please split the counttable into different subcounttables, for each timeseries (each repliacte seperately!) create one counttable.
-#SARA: to test the script maybe start for now only with one countable by subsetting the full countttable
+#SARA: before getting to the next setp please split the counttable into different 
+#subcounttables, for each timeseries (each repliacte seperately!) create one counttable.
+#SARA: to test the script maybe start for now only with one countable by subsetting 
+#the full countttable
+
+
+
 
 #### Part 2 ###
+
+
+### GUI: my modifications on the code start from here
+
+#create an object with one replicate of a treatment, with all sampling days (from 0 to 6)
+# I used only one of the subcounttables, but you just have to change the source .csv file to 
+#analyse the other samples
+df<-read.csv("bin x CM.1.csv", header = T, sep = ";")
+
+
 #finding zeros
-bincurve=matrix(NA,nrow=dim(FD[["Matrices"]])[2],ncol=2)
-for (i in 1:dim(FD[["Matrices"]])[2]){
-  bincurve[i,]=c(i,length(which(FD[["Matrices"]][,i]==0)))
+bincurve=matrix(NA,nrow=dim(df)[2],ncol=2)
+for (i in 1:dim(df)[2]){
+  bincurve[i,]=c(i,length(which(df[,i]==0)))
 }
 
 
-#but also the bins with 50% of the samples in order to reduce complexity and make the correlation matrix
-#SARA: you have to replace the 'n sample' by the number of samples in you subset counttable dived by 2.
-#SARA: When you have six samples, each for one sampled day (I remember we had 6 days sampled, right), the write '3'
-counter=which(bincurve[,2]>n samples)
-FDclean=FD[["Matrices"]][,-counter]
+#but also the bins with 50% of the samples in order to reduce 
+#complexity and make the correlation matrix
+#SARA: you have to replace the 'n sample' by the number of samples in you subset counttable 
+#dived by 2.
+#SARA: When you have six samples, each for one sampled day 
+#(I remember we had 6 days sampled, right), the write '3'
+counter=which(bincurve[,2]>3)
+FDclean=df[,-counter]
 dim(FDclean) #check the new dimensions
 
 ### Analisis per replicate
 #High DOM Control
 library(Hmisc)
 library(igraph)
-MHC1=FDclean[which(clases$Treat=="C" & clases$DOM=="H" & clases$Rep==1),]
+
+
+MHC1=FDclean
+MHC1<-MHC1[,-1]
+
+#GUI: from this point on, I didn't change the code. Is exactly as Angel wrote it
+#GUI: I didn't look to see the meaning of the parameters value he chose. I'll give a look at it
+
 
 #Calculate the correlation values, filter by significance and by magnitude of correlation
-HCcor1=rcorr(MHC1,type="spearman")
+HCcor1=rcorr(as.matrix(MHC1[,7:775]),type="spearman")
 HCcor1$P=p.adjust(HCcor1$P,method="BH") # To control the false positive
 HCcor1$r[HCcor1$P>0.05]=0 #Onlysignificant values
 HCcor1$r[abs(HCcor1$r)<.7]=0 #Only correlations values higher than 0.7
