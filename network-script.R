@@ -29,11 +29,21 @@ FD[["Matrices"]] #contain the count table
 
 ### GUI: my modifications on the code start from here
 
-#create an object with one replicate of a treatment, with all sampling days (from 0 to 6)
-# I used only one of the subcounttables, but you just have to change the source .csv file to 
-#analyse the other samples
-df<-read.csv("bin x CM.1.csv", header = T, sep = ";")
 
+## GUI: creating a table to insert the results. Do it only once, at the first time
+header<-c("Sample","Mean Degree", "Median Degree", "Density", "Diameter", "Modularity", 
+          "Total Length", "Pos Lenght", "Neg Lenght" )
+Results<-rbind(header)
+
+#GUI: create an object with one replicate of a treatment, with all sampling days (from 0 to 6)
+#GUI: I used only one of the subcounttables, but you just have to change the source .csv file to 
+#analyse the other samples
+
+
+df<-read.csv("bin x CM.3.csv", header = T, sep = ";")
+
+#change the file name you are using here, to create a table with the network indices of the sub-counttable
+filename<-"CM3"
 
 #finding zeros
 bincurve=matrix(NA,nrow=dim(df)[2],ncol=2)
@@ -59,14 +69,16 @@ library(igraph)
 
 
 MHC1=FDclean
-MHC1<-MHC1[,-1]
 
-#GUI: from this point on, I didn't change the code. Is exactly as Angel wrote it
-#GUI: I didn't look to see the meaning of the parameters value he chose. I'll give a look at it
+
+
+#GUI: I didn't look to see the meaning of the parameters values that Angel chose. I'll give a look at it
 
 
 #Calculate the correlation values, filter by significance and by magnitude of correlation
-HCcor1=rcorr(as.matrix(MHC1[,7:775]),type="spearman")
+## GUI: here, change the upper limit of column numbers accordingly to the dimension of the 
+#'FDclean'. There is a way to get this automatically, but I can't remember now
+HCcor1=rcorr(as.matrix(MHC1[,7:675]),type="spearman")
 HCcor1$P=p.adjust(HCcor1$P,method="BH") # To control the false positive
 HCcor1$r[HCcor1$P>0.05]=0 #Onlysignificant values
 HCcor1$r[abs(HCcor1$r)<.7]=0 #Only correlations values higher than 0.7
@@ -79,22 +91,38 @@ egdes.net=E(net1)$weight #saving the edges in a new object
 E(net1)$weight=abs(E(net1)$weight) # replace negative egdes for positive (only for plotting)
 plot(net1,vertex.size=2,edge.width=.4) # figure
 
+
+
 # Indexes
-mean(degree(net1))
+mean.degree<-mean(degree(net1))
 
-median(degree(net1))
+median.degree<-median(degree(net1))
 
-edge_density(net1, loops=F)
+density<-edge_density(net1, loops=F)
 
-diameter(net1, directed=F)
+diameter<-diameter(net1, directed=F)
+
+
+## GUI: biological networks usually have long-tailed distribution of frequencies of degree
+hist.degree<-hist(degree(net1)) 
 
 #Describing edges (total, positive and negatives)
 
-length(which(!is.nan(egdes.net)))
-length(which(is.nan(egdes.net)))
-length(egdes.net[which(egdes.net<0)])
-length(egdes.net[which(egdes.net>0)])
+Total.lenght<-length(which(!is.nan(egdes.net)))
+length(which(is.nan(egdes.net))) ## GUI: I believe that this one should always be zero
+Negative.length<-length(egdes.net[which(egdes.net<0)])
+Positive.length<-length(egdes.net[which(egdes.net>0)])
 
+#GUI: not sure yet how to explore betwenness, but we probably should
 bet=betweenness(net1, directed=F, weights=NA)
+
 ceb <- cluster_edge_betweenness(net1)
-modularity(ceb) 
+Modularity<-modularity(ceb) 
+
+
+partial.results<-c(filename,mean.degree,median.degree,density,diameter,Modularity,
+                   Total.lenght,Positive.length,Negative.length)
+Results<-rbind(Results,partial.results)
+
+##GUI: start over from line #43 with another sample. Remember to change accordingly the 'filename' object
+
