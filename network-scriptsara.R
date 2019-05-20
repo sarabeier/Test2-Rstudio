@@ -138,8 +138,27 @@ TukeyHSD(res.aov)
 
 #####################################################################################################
 #plots
-plot(SS.2.csv.net,vertex.size=2,edge.width=.4) 
+par(mfrow=c(3,3))
+plot(SS.1.csv.net,vertex.size=2,edge.width=.4, main=c('SS.1')) 
+plot(SS.2.csv.net,vertex.size=2,edge.width=.4, main=c('SS.2')) 
+plot(SS.3.csv.net,vertex.size=2,edge.width=.4, main=c('SS.3')) 
+plot(CS.1.csv.net,vertex.size=2,edge.width=.4, main=c('CS.1')) 
+plot(CS.2.csv.net,vertex.size=2,edge.width=.4, main=c('CS.2')) 
+plot(CS.3.csv.net,vertex.size=2,edge.width=.4, main=c('CS.3')) 
+plot(SCS.1.csv.net,vertex.size=2,edge.width=.4, main=c('SCS.1')) 
+plot(SCS.2.csv.net,vertex.size=2,edge.width=.4, main=c('SCS.2')) 
+plot(SCS.3.csv.net,vertex.size=2,edge.width=.4, main=c('SCS.3')) 
 
+par(mfrow=c(3,3))
+plot(SM.1.csv.net,vertex.size=2,edge.width=.4, main=c('SM.1')) 
+plot(SM.2.csv.net,vertex.size=2,edge.width=.4, main=c('SM.2')) 
+plot(SM.3.csv.net,vertex.size=2,edge.width=.4, main=c('SM.3')) 
+plot(CM.1.csv.net,vertex.size=2,edge.width=.4, main=c('CM.1')) 
+plot(CM.2.csv.net,vertex.size=2,edge.width=.4, main=c('CM.2')) 
+plot(CM.3.csv.net,vertex.size=2,edge.width=.4, main=c('CM.3')) 
+plot(SCM.1.csv.net,vertex.size=2,edge.width=.4, main=c('SCM.1')) 
+plot(SCM.2.csv.net,vertex.size=2,edge.width=.4, main=c('SCM.2')) 
+plot(SCM.3.csv.net,vertex.size=2,edge.width=.4, main=c('SCM.3')) 
 
 
 
