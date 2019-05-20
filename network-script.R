@@ -39,19 +39,21 @@ Results<-rbind(header)
 #GUI: create an object with one replicate of a treatment, with all sampling days (from 0 to 6)
 #GUI: I used only one of the subcounttables, but you just have to change the source .csv file to 
 #analyse the other samples
+counts = list.files(pattern="*.csv")
+#df<-read.csv("bin x CM.3.csv", header = T, sep = ";")
+df<-read.csv("bin x canet.csv", header = T, sep = ";")
+df<-read.csv(counts[1], header = T, sep = ";")
 
-
-df<-read.csv("bin x CM.3.csv", header = T, sep = ";")
-
+#########################################################################################################################
 #change the file name you are using here, to create a table with the network indices of the sub-counttable
-filename<-"SCM3"
+#filename<-"SCM3"
+filename<-counts[1]
 
 #finding zeros
 bincurve=matrix(NA,nrow=dim(df)[2],ncol=2)
 for (i in 1:dim(df)[2]){
   bincurve[i,]=c(i,length(which(df[,i]==0)))
 }
-
 
 #but also the bins with 50% of the samples in order to reduce 
 #complexity and make the correlation matrix
@@ -92,8 +94,6 @@ E(net1)$color=ifelse(E(net1)$weight> 0, "blue","red") #give color to edges
 egdes.net=E(net1)$weight #saving the edges in a new object
 E(net1)$weight=abs(E(net1)$weight) # replace negative egdes for positive (only for plotting)
 plot(net1,vertex.size=2,edge.width=.4) # figure
-
-
 
 # Indexes
 mean.degree<-mean(degree(net1))
