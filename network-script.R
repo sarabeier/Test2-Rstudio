@@ -44,7 +44,7 @@ Results<-rbind(header)
 df<-read.csv("bin x CM.3.csv", header = T, sep = ";")
 
 #change the file name you are using here, to create a table with the network indices of the sub-counttable
-filename<-"CM3"
+filename<-"SCM3"
 
 #finding zeros
 bincurve=matrix(NA,nrow=dim(df)[2],ncol=2)
@@ -79,7 +79,8 @@ MHC1=FDclean
 #Calculate the correlation values, filter by significance and by magnitude of correlation
 ## GUI: here, change the upper limit of column numbers accordingly to the dimension of the 
 #'FDclean'. There is a way to get this automatically, but I can't remember now
-HCcor1=rcorr(as.matrix(MHC1[,7:675]),type="spearman")
+#HCcor1=rcorr(as.matrix(MHC1[,7:675]),type="spearman")
+HCcor1=rcorr(as.matrix(MHC1[,7:dim(FDclean)[2]]),type="spearman") #SARA: replaceing the latter number by dim(FDclean)[2] generalizes this command for all input
 HCcor1$P=p.adjust(HCcor1$P,method="BH") # To control the false positive
 HCcor1$r[HCcor1$P>0.05]=0 #Onlysignificant values
 HCcor1$r[abs(HCcor1$r)<.7]=0 #Only correlations values higher than 0.7
@@ -124,6 +125,7 @@ Modularity<-modularity(ceb)
 partial.results<-c(filename,mean.degree,median.degree,density,diameter,Modularity,
                    Total.lenght,Positive.length,Negative.length)
 Results<-rbind(Results,partial.results)
+Results
 
 ##GUI: start over from line #43 with another sample. Remember to change accordingly the 'filename' object
 
