@@ -1,7 +1,8 @@
 ### Part 1 ###
 
 #GUI: If you are using the subcounttables, you can skip Part 1 and go directly to Part 2 
-setwd("directory")
+#setwd("directory")
+setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio")
 
 ##another change
 #SARA:another comment
