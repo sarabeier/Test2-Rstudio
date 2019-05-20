@@ -2,51 +2,13 @@ rm(list=ls()) #cleans up working space
 library(Hmisc)
 library(igraph)
 
-### Part 1 ###
-
-#GUI: If you are using the subcounttables, you can skip Part 1 and go directly to Part 2 
 #setwd("directory")
 setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio")
-
-##another change
-#SARA:another comment
-  
-
-#in the FlowJo analysis. Here, the gate "bact" was done with SCC-H vs FL1-H
-
-FD<-flowDiv(myworkspaces= "workspace.wsp",gate.name="bact",dilutions=rep(10,n samples))
-
-# 3 and 5 (SSC and FL1-H)
-# we used 40
-
-FD[["Matrices"]] #contain the count table
-
-#SARA: before getting to the next setp please split the counttable into different 
-#subcounttables, for each timeseries (each repliacte seperately!) create one counttable.
-#SARA: to test the script maybe start for now only with one countable by subsetting 
-#the full countttable
-
-
-
-
-#### Part 2 ###
-
-
-### GUI: my modifications on the code start from here
-
-
-## GUI: creating a table to insert the results. Do it only once, at the first time
-header<-c("Sample","Mean Degree", "Median Degree", "Density", "Diameter", "Modularity", 
-          "Total Length", "Pos Lenght", "Neg Lenght" )
-Results<-rbind(header)
-
-
-#GUI: create an object with one replicate of a treatment, with all sampling days (from 0 to 6)
-#GUI: I used only one of the subcounttables, but you just have to change the source .csv file to 
-#analyse the other samples
 counts = list.files(pattern="*.csv")
 
-#########################################################################################################################
+#####################################################################################################
+#loop with network analyses for all timeseries
+
 datalist = list()
 for (j in 2:length(counts)){
   #for (j in 10:11){
@@ -126,24 +88,58 @@ for (j in 2:length(counts)){
   datalist[[j]] <- d
 }
 Results = do.call(rbind, datalist)
-colnames(Results) <- header
-Results
+colnames(Results)<-c("Sample","Mean.Degree", "Median.Degree", "Density", "Diameter", "Modularity", 
+          "Total.Length", "Pos.Lenght", "Neg.Lenght" )
 
-###########################
+Results$prop.neg <- Results$Neg.Lenght/Results$Total.Length*100
+Results$prop.pos <- Results$Pos.Lenght/Results$Total.Length*100
+
 #create dataframe with schema for expreimental setup
 source <- c(rep('C',6),rep('CS',6),rep('S',6) )
 DOM <- c(rep('M',3),rep('S',3),rep('M',3),rep('S',3),rep('M',3),rep('S',3))
 rep <- rep(c('r1','r2','r3'),6)
 schema<- cbind.data.frame(source,DOM,rep)
 schema$treat <-paste(source, DOM, sep='_')
+
 Results <- cbind.data.frame(Results,schema)
 
+write.csv(Results, 'Results.1.csv')
+
 #####################################################################################################
+#stats
+res.aov1 <- aov(Mean.Degree ~ source*DOM, data = Results)
+summary (res.aov1)
+TukeyHSD(res.aov1)
+par(mfrow=c(2,2))
+plot(res.aov1)
+
+res.aov2 <- aov(prop.neg ~ source*DOM, data = Results)
+summary (res.aov2)
+TukeyHSD(res.aov2)
+par(mfrow=c(2,2))
+plot(res.aov2)
+
+Results$x<-(log(Results$prop.neg/(100-Results$prop.neg))) #logit transformation
+res.aov2 <- aov(x ~ source*DOM, data = Results)
+summary (res.aov2)
+TukeyHSD(res.aov2)
+plot(res.aov2)
+
+res.aov3 <- aov(Density ~ source*DOM, data = Results)
+summary (res.aov3)
+TukeyHSD(res.aov3)
+plot(res.aov3)
+
+#no significance
+res.aov <- aov(Modularity ~ source*DOM, data = Results)
+summary (res.aov)
+TukeyHSD(res.aov)
+
+
+#####################################################################################################
+#plots
 plot(SS.2.csv.net,vertex.size=2,edge.width=.4) 
 
 
-
-
-write.csv(Results, 'Results.1.csv')
 
 
