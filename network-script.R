@@ -1,7 +1,8 @@
 ### Part 1 ###
 
 #GUI: If you are using the subcounttables, you can skip Part 1 and go directly to Part 2 
-setwd("directory")
+#setwd("directory")
+setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio")
 
 ##another change
 #SARA:another comment
@@ -38,19 +39,21 @@ Results<-rbind(header)
 #GUI: create an object with one replicate of a treatment, with all sampling days (from 0 to 6)
 #GUI: I used only one of the subcounttables, but you just have to change the source .csv file to 
 #analyse the other samples
+counts = list.files(pattern="*.csv")
+#df<-read.csv("bin x CM.3.csv", header = T, sep = ";")
+df<-read.csv("bin x canet.csv", header = T, sep = ";")
+df<-read.csv(counts[1], header = T, sep = ";")
 
-
-df<-read.csv("bin x CM.3.csv", header = T, sep = ";")
-
+#########################################################################################################################
 #change the file name you are using here, to create a table with the network indices of the sub-counttable
-filename<-"CM3"
+#filename<-"SCM3"
+filename<-counts[1]
 
 #finding zeros
 bincurve=matrix(NA,nrow=dim(df)[2],ncol=2)
 for (i in 1:dim(df)[2]){
   bincurve[i,]=c(i,length(which(df[,i]==0)))
 }
-
 
 #but also the bins with 50% of the samples in order to reduce 
 #complexity and make the correlation matrix
@@ -78,7 +81,8 @@ MHC1=FDclean
 #Calculate the correlation values, filter by significance and by magnitude of correlation
 ## GUI: here, change the upper limit of column numbers accordingly to the dimension of the 
 #'FDclean'. There is a way to get this automatically, but I can't remember now
-HCcor1=rcorr(as.matrix(MHC1[,7:675]),type="spearman")
+#HCcor1=rcorr(as.matrix(MHC1[,7:675]),type="spearman")
+HCcor1=rcorr(as.matrix(MHC1[,7:dim(FDclean)[2]]),type="spearman") #SARA: replaceing the latter number by dim(FDclean)[2] generalizes this command for all input
 HCcor1$P=p.adjust(HCcor1$P,method="BH") # To control the false positive
 HCcor1$r[HCcor1$P>0.05]=0 #Onlysignificant values
 HCcor1$r[abs(HCcor1$r)<.7]=0 #Only correlations values higher than 0.7
@@ -90,8 +94,6 @@ E(net1)$color=ifelse(E(net1)$weight> 0, "blue","red") #give color to edges
 egdes.net=E(net1)$weight #saving the edges in a new object
 E(net1)$weight=abs(E(net1)$weight) # replace negative egdes for positive (only for plotting)
 plot(net1,vertex.size=2,edge.width=.4) # figure
-
-
 
 # Indexes
 mean.degree<-mean(degree(net1))
@@ -123,6 +125,7 @@ Modularity<-modularity(ceb)
 partial.results<-c(filename,mean.degree,median.degree,density,diameter,Modularity,
                    Total.lenght,Positive.length,Negative.length)
 Results<-rbind(Results,partial.results)
+Results
 
 ##GUI: start over from line #43 with another sample. Remember to change accordingly the 'filename' object
 
