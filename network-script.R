@@ -25,35 +25,37 @@ for (j in 2:length(counts)){
   
   #define the name of each time series based on the filename
   filename<-substring(counts[j],7,16) 
-
+  
   #finding zeros
   bincurve=matrix(NA,nrow=dim(df)[2],ncol=2)
   for (i in 1:dim(df)[2]){
     bincurve[i,]=c(i,length(which(df[,i]==0)))
   }
-
+  
   #exclude all bins which are present in less of half datapoints of each time series
   counter=which(bincurve[,2]>3)
   FDclean=df[,-counter]
   dim(FDclean) #check the new dimensions
-
+  
+  
   #SARA: file 11 and 16 are problematic because they contain each one bin with 1 in for each time point (no variance), which messes up the network 
   #identifies bins without variance; 7 needs to be added because the first 7 columns are not considered in order to identify the righ column number
   out<-which(apply(FDclean[,-c(1:7)], 2, var)==0)+7 
   #if..else code to remove bins with variance=0 if they occur
   if (length(out)>=1) {
     FDclean <-FDclean[,-(which(apply(FDclean[,-c(1:7)], 2, var)==0)+7)] #removes bins without variance
-    } else {
+  } else {
     FDclean <-FDclean #in case no bins without variance are detected FDclean is not changed
   }
   dim(FDclean) #check the new dimensions after removal of problematic bins
   MHC1=FDclean
+  rich <-dim(MHC1)[2]-7 #richness of OTU bins after filtering out by coverage
   #Calculate the correlation values, filter by significance and by magnitude of correlation
   HCcor1=rcorr(as.matrix(MHC1[,8:dim(MHC1)[2]]),type="spearman") #SARA: replaceing the latter number by dim(MHC1)[2] generalizes this command for all input, time needs to be excluded!!
   HCcor1$P=p.adjust(HCcor1$P,method="BH") # To control the false positive
   HCcor1$r[HCcor1$P>0.05]=0 #Onlysignificant values
   HCcor1$r[abs(HCcor1$r)<.7]=0 #Only correlations values higher than 0.7
-
+  
   net1 <- graph_from_adjacency_matrix(HCcor1$r, weighted=T, mode="upper", diag=F) # to create the object
   net1$layout <-layout.fruchterman.reingold # the way to organizae the nodes in the plot
   V(net1)$label=NA # remove the rownames
@@ -63,7 +65,7 @@ for (j in 2:length(counts)){
   par(mfrow=c(2, 1)) #SARA: split panels to see both plots at once
   plot(net1,vertex.size=2,edge.width=.4) # figure
   assign(paste0(filename, '.net'), net1) #assignes new name to net1, which depends on filename (e.g. SM.3.csv.net), e.g. to reproduce plots
-
+  
   # Indexes (see also https://en.wikipedia.org/wiki/Network_science)
   mean.degree<-mean(degree(net1)) #mean degree indicates the average number of edges for each bin
   median.degree<-median(degree(net1))
@@ -72,33 +74,34 @@ for (j in 2:length(counts)){
   density<-edge_density(net1, loops=F) 
   #the diametr is defined as the shortest distance between the two most distant nodes in the network
   diameter<-diameter(net1, directed=F)
-
+  
   ## GUI: biological networks usually have long-tailed distribution of frequencies of degree
   #SARA: in the histogram I could see that counttables 11 and 16 had each one bin single bin with >400 interactions 
   #SARA: this made it impossible to calculate modularity, while all other parameters seemed to be +/- ok
   hist.degree<-hist(degree(net1))  #histogram allows to detect outliers
-
+  
   #Describing edges (total, positive and negatives)
   Total.lenght<-length(which(!is.nan(egdes.net))) #total number of edges in the network
   length(which(is.nan(egdes.net))) ## GUI: I believe that this one should always be zero
   Negative.length<-length(egdes.net[which(egdes.net<0)]) #number of edges indicating negative interactions
   Positive.length<-length(egdes.net[which(egdes.net>0)]) #number of edges indicating positive interactions
-
+  
   #GUI: not sure yet how to explore betwenness, but we probably should
   bet=betweenness(net1, directed=F, weights=NA)
   ceb <- cluster_edge_betweenness(net1)
   Modularity<-modularity(ceb) #measure the strength of division of a network into modules 
   
   #results from the loop are summarized in d
-  d<-data.frame(filename,mean.degree,median.degree,density,diameter,Modularity,
-                   Total.lenght,Positive.length,Negative.length)
+  d<-data.frame(filename,rich, mean.degree,median.degree,density,diameter,Modularity,
+                Total.lenght,Positive.length,Negative.length)
   #results in d from each round in the loop are stored in the data list
   datalist[[j]] <- d
 }
 #results stored in the list are transformed into a dataframe
 Results = do.call(rbind, datalist)
-colnames(Results)<-c("Sample","Mean.Degree", "Median.Degree", "Density", "Diameter", "Modularity", 
-          "Total.Length", "Pos.Lenght", "Neg.Lenght" )
+colnames(Results)<-c("Sample","Richness","Mean.Degree", "Median.Degree", "Density", "Diameter", "Modularity", 
+                     "Total.Length", "Pos.Lenght", "Neg.Lenght" )
+
 
 #adds columns with the proportion of positive and negative interactions
 Results$prop.neg <- Results$Neg.Lenght/Results$Total.Length*100
