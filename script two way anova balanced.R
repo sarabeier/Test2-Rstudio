@@ -4,9 +4,10 @@ rm(list=ls())
 library(car)
 library(dplyr)
 library(ggplot2)
+library(readxl)
 
-setwd("C:/Users/Gui/Documents/Doutorado/Colaboração Sara Beier/Experiment 14/Exp14_5")
-
+#setwd("C:/Users/Gui/Documents/Doutorado/Colabora??o Sara Beier/Experiment 14/Exp14_5")
+setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio")
 
 totalD<-read_excel("day5.xlsx",
                  sheet ="Plan3")
