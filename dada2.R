@@ -46,7 +46,7 @@ library(phangorn)
 setwd("/Users/ccma_ufscar/Documents/Usuarios/Guilherme/Paired-End sequences/Sequences")
 path<-("/Users/ccma_ufscar/Documents/Usuarios/Guilherme/Paired-End sequences/Sequences")
 setwd("/Users/sara/Documents/DFG/cryofreezing/sequencing/PrimerClipped")
-setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio/dada2.R")
+setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio")
 path<-("/Users/sara/Documents/DFG/cryofreezing/sequencing/PrimerClipped")
 
 
@@ -264,7 +264,8 @@ if(taxa_are_rows(ps.rel)){rOTU1 <- t(rOTU1)}
 rOTUdf.ps = as.data.frame(rOTU1)
 row.names(rOTUdf.ps) <-substring(row.names(rOTUdf.ps),15,22) #simplifies sample names
 write.table(rOTUdf.ps, sep='\t', col.names=NA,quote=FALSE,"dada.rcounts.ASV.1.tab")
-write.table(t(rOTUdf.ps), sep='\t', col.names=NA,quote=FALSE,"dada.rcounts.ASV.2.tab") #I expert also the transposed data in this case, beause I need it like this for the picrust
+trOTUdf.ps <- as.data.frame.matrix(t(rOTUdf.ps))
+write.table(data.frame("ASV"=rownames(trOTUdf.ps),trOTUdf.ps),"dada.rcounts.ASV.2.tab", row.names=FALSE,quote=FALSE, sep='\t') #I expert also the transposed data in this case, beause I need it like this for the picrust
 
 #extract fasta file
 seqs <- getSequences(seqtab.nochim)
