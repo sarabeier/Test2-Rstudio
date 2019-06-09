@@ -7,6 +7,8 @@ setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio")
 dat <- read.csv('data.full.csv', row.names=1) #load data
 dat$prop.neg.logit<-(log(dat$prop.neg/(100-dat$prop.neg))) #logit transformation for precent data (http://strata.uga.edu/8370/rtips/proportions.html)
 head(dat)
+traits <-read.table('picrust.traits.tab', header=T, row.names=1) #datafile with picrust traits
+head(traits)
 ######################################################################################################
 #ANOVAs functional data T5
 res.aov1 <- aov(BP ~ source*DOM, data = dat[dat$time=='T5',])
@@ -109,3 +111,26 @@ boxplot(richness.bins.netw ~ interaction(source,DOM), data = dat[dat$time=='T5',
 boxplot(S.ASV ~ interaction(source,DOM), data = dat[dat$time=='T5',], main='rich.ASV') 
 boxplot(H.ASV ~ interaction(source,DOM), data = dat[dat$time=='T5',], main='H.ASV') 
 
+######################################################################################################
+#one sample t.tests
+#https://stats.stackexchange.com/questions/51242/statistical-difference-from-zero
+C.traits <- traits[traits$source=='C',] #select for samples from Canet-community
+C.traits$av.16sdiff <- C.traits$av.16s-traits[1,4] #substract 16s copy number for treatments from values of original inoculum
+C.traits$av.genomesizediff <- C.traits$av.genomesize-traits[1,5] #substract genome size for treatments from values of original inoculum
+
+S.traits <- traits[traits$source=='S',] #select for samples from SOLA-community
+S.traits$av.16sdiff <- S.traits$av.16s-traits[1,4] #substract 16s copy number for treatments from values of original inoculum
+S.traits$av.genomesizediff <- S.traits$av.genomesize-S.traits[7,5] #substract genome size for treatments from values of original inoculum
+
+traits.diff <- rbind(C.traits[-1,],S.traits[-7,]) #join substracted values from the Canet and SOLA community into one dataframe
+traits.diff #dataframe displaying differences of trait-values between inoculum and treatments
+
+#function to extract p-value from one sample one-tailed p-test (hypothesis: 16s copies, genomesize increase compared to org)
+ttestp <-function(values) {
+  pvalue<-t.test(values, alternative='greater')[3] #this line codes for the one-tailed p-test (for two-tailed t-test replace 'greater' by 'two.sided')
+  return(pvalue)
+}
+
+
+pvalues <-aggregate(. ~ source + DOM, data=traits.diff[-1,-c(3:5)], FUN=ttestp) #returns table with p-values
+pvalues[with(pvalues, order(source, DOM)), ]
