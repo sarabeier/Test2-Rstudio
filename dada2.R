@@ -145,8 +145,8 @@ write.table(track,file="/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/da
 
 taxa <- assignTaxonomy(seqtab.nochim, "/Users/ccma_ufscar/Documents/Usuarios/Guilherme/Paired-End sequences/Sequences/silva_nr_v128_train_set.fa.gz",  multithread=TRUE)
 taxa <- assignTaxonomy(seqtab.nochim, "/Users/sara/Documents/Silva/silva_nr_v128_train_set.fa.gz",  multithread=TRUE) #path on Sara's Mac
-write.table(taxa, file="dada.taxonomic.table.tab",sep = "\t")
-#write.table(taxa, file="/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada.taxonomic.table.tab",sep = "\t")
+#write.table(taxa, file="dada.taxonomic.table.tab",sep = "\t")
+write.table(taxa, file="/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada.taxonomic.table.tab",sep = "\t")
 
 
 #Inspect taxonomic assignments
