@@ -277,7 +277,8 @@ names(seqs)<- paste0(">SV_", seq(ntaxa(ps)), "_", taxa.print.names$Order)
 write.table(seqs, "dada.seqs.nochim.fasta",quote=FALSE, col.names=FALSE)
 
 
-save.image("dada2_r")
+#save.image("dada2_r")
+save.image("/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada2_r")
 # Close R, Re-open R
-load("dada2_r")
+#load("/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada2_r")
 
