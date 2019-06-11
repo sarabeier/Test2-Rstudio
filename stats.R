@@ -134,3 +134,5 @@ ttestp <-function(values) {
 
 pvalues <-aggregate(. ~ source + DOM, data=traits.diff[-1,-c(3:5)], FUN=ttestp) #returns table with p-values
 pvalues[with(pvalues, order(source, DOM)), ]
+
+save.image("dada2_r")
