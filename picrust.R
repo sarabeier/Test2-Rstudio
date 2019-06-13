@@ -45,7 +45,6 @@ genomesize.mod3$genome.size <- round(genomesize.mod3$genome.size/10000,0)
 #evaluation of the picrust output data
 #read count file
 setwd("/Users/sara/Documents/R-scripts/cry/Test2-Rstudio")
-counts <- read.table("/Users/sara/Documents/DFG/cryofreezing/sequencing/PrimerClipped/ps4.rel.tsv")
 counts <- read.table("dada.rcounts.ASV.2.tab", header=T, row.names=1)
 
 ###########################
