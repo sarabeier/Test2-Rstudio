@@ -119,7 +119,7 @@ seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE
 dim(seqtab.nochim)
 # 21 861
 #write.table(seqtab.nochim,file="dada.Seqtab.nochim.tab", sep = "\t")
-write.table(seqtab.nochim,file="/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada.Seqtab.nochim.tab", sep = "\t")
+write.table(seqtab.nochim,file="dada.Seqtab.nochim.tab", sep = "\t")
 
 
 sum(seqtab.nochim)/sum(seqtab)
@@ -136,7 +136,7 @@ colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "n
 rownames(track) <- sample.names
 head(track)
 #write.table(track,file="dada.Number_of_reads_per_sample.tab", sep = "\t") 
-write.table(track,file="/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada.Number_of_reads_per_sample.tab", sep = "\t")
+write.table(track,file="dada.Number_of_reads_per_sample.tab", sep = "\t")
 
 #Assign taxonomy. You have to download the `silva_nr_v128_train_set.fa.gz` file
 #and put it inside the sae folder of your samples. See DADA2 documentation to download it
@@ -146,7 +146,7 @@ write.table(track,file="/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/da
 taxa <- assignTaxonomy(seqtab.nochim, "/Users/ccma_ufscar/Documents/Usuarios/Guilherme/Paired-End sequences/Sequences/silva_nr_v128_train_set.fa.gz",  multithread=TRUE)
 taxa <- assignTaxonomy(seqtab.nochim, "/Users/sara/Documents/Silva/silva_nr_v128_train_set.fa.gz",  multithread=TRUE) #path on Sara's Mac
 #write.table(taxa, file="dada.taxonomic.table.tab",sep = "\t")
-write.table(taxa, file="/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada.taxonomic.table.tab",sep = "\t")
+write.table(taxa, file="dada.taxonomic.table.tab",sep = "\t")
 
 
 #Inspect taxonomic assignments
@@ -257,7 +257,7 @@ OTUdf.ps = as.data.frame(OTU1)
 row.names(OTUdf.ps) <-substring(row.names(OTUdf.ps),15,22) #simplifies sample names
 write.table(OTUdf.ps, sep='\t', col.names=NA,quote=FALSE,"dada.counts.ASV.1.tab") ##abundance table @GUI: I have changed the file name to counts because it's the raw count data
 #write.table(tax_table(ps), file = "dada.Taxonomy.ASV.tab", sep = "\t") ## taxonomy table
-write.table(tax_table(ps), file = "/Users/sara/Documents/DFG/cryofreezing/sequencing/ASV/dada.Taxonomy.ASV.tab", sep = "\t") ## taxonomy table
+write.table(tax_table(ps), file = "dada.Taxonomy.ASV.tab", sep = "\t") ## taxonomy table
 
 #extract relative abundance table
 ps.rel = transform_sample_counts(ps, function(x) x/sum(x))
